@@ -1,58 +1,36 @@
-import { indexFromPos, pencilmark } from '@/utils/cell'
+import { Cell as CellType } from '@/context/Game'
+// import { pencilmark } from '@/utils/cell'
 import { memo } from 'react'
-import { Cell as CellType } from '../utils/types'
 import {
   CenterContainer,
-  Collapsed,
   CornerContainer,
   CornerItem,
-  DebugContainer,
+  // DebugContainer,
+  Single,
   StyledCell,
 } from './Cell.styles'
 
 export interface CellProps {
+  index: number
   cell: CellType
   isSelected: boolean
   isMarked: boolean
-  debug?: boolean
-  onMouseDown: (cell: CellType) => React.MouseEventHandler
-  onDoubleClick: (cell: CellType) => React.MouseEventHandler
-  onMouseEnter: (cell: CellType) => React.MouseEventHandler
 }
 
-const Cell: React.FC<CellProps> = memo(
-  ({
-    cell,
-    isSelected,
-    isMarked,
-    debug = false,
-    onMouseDown,
-    onDoubleClick,
-    onMouseEnter,
-  }) => {
-    return (
-      <StyledCell
-        isEditable={!cell.isFixed}
-        isSelected={isSelected}
-        isMarked={isMarked}
-        onMouseDown={onMouseDown(cell)}
-        onDoubleClick={onDoubleClick(cell)}
-        onMouseEnter={onMouseEnter(cell)}
-        i={indexFromPos(cell.pos)}
-      >
-        {cell.value !== null ? (
-          <Collapsed>{cell.value}</Collapsed>
-        ) : (
-          <>
-            <Center>{cell.center}</Center>
-            <Corner>{cell.corner}</Corner>
-            {debug && <Debug>{cell.debug}</Debug>}
-          </>
-        )}
-      </StyledCell>
-    )
-  }
-)
+const Cell: React.FC<CellProps> = memo(({ index, cell, isSelected, isMarked }) => {
+  return (
+    <StyledCell isFixed={cell.isFixed} isSelected={isSelected} isMarked={isMarked} i={index}>
+      {cell.value !== null ? (
+        <Single>{cell.value}</Single>
+      ) : (
+        <>
+          <Center>{cell.center}</Center>
+          <Corner>{cell.corner}</Corner>
+        </>
+      )}
+    </StyledCell>
+  )
+})
 
 interface Children {
   children: number[]
@@ -72,8 +50,8 @@ const Corner = ({ children }: Children) => (
   </CornerContainer>
 )
 
-const Debug = ({ children }: Children) => (
-  <DebugContainer>{pencilmark(children)}</DebugContainer>
-)
+// export const Debug = ({ children }: Children) => (
+//   <DebugContainer>{pencilmark(children)}</DebugContainer>
+// )
 
 export default Cell

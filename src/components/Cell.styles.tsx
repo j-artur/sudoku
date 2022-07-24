@@ -1,23 +1,11 @@
 import styled from '@emotion/styled'
 
 interface CellProps {
-  isEditable: boolean
+  isFixed: boolean
   isMarked: boolean
   isSelected: boolean
   i: number
 }
-
-const BG_COLOR = '#0D151D'
-const TEXT_COLOR = '#55c2f0'
-const BORDER_COLOR = '#172f3d'
-
-const FIXED_TEXT_COLOR = '#7F95A9'
-const SELECT_TEXT_COLOR = '#e2eaf2'
-
-const SELECT_BG_COLOR = '#3A6A7F'
-const SELECT_BORDER_COLOR = '#3B5368'
-
-const MARK_BG_COLOR = '#172f3d'
 
 export const StyledCell = styled.div<CellProps>`
   position: relative;
@@ -29,37 +17,47 @@ export const StyledCell = styled.div<CellProps>`
   width: 4rem;
   height: 4rem;
 
-  border: 1px solid
-    ${props =>
-      props.isSelected || props.isMarked ? SELECT_BORDER_COLOR : BORDER_COLOR};
   background-color: ${props =>
     props.isSelected
-      ? SELECT_BG_COLOR
+      ? props.theme.colors.selected
       : props.isMarked
-      ? MARK_BG_COLOR
-      : BG_COLOR};
+      ? props.theme.colors.marked
+      : props.theme.colors.background};
   color: ${props =>
-    props.isSelected || props.isMarked
-      ? SELECT_TEXT_COLOR
-      : props.isEditable
-      ? TEXT_COLOR
-      : FIXED_TEXT_COLOR};
+    props.isFixed ? props.theme.colors.givenDigit : props.theme.colors.placedDigit};
   font-family: 'JetBrains Mono';
-  font-weight: ${props => (props.isEditable ? 'normal' : 'bold')};
+  font-weight: ${props => (props.isFixed ? 'bold' : 'normal')};
   text-align: center;
 
   user-select: none;
   cursor: pointer;
 
-  transition: background-color 0.05s ease, color 0.05s ease;
-
   &:hover {
     backdrop-filter: brightness(20%);
   }
 `
+interface StyledOverlayProps {
+  i: number
+}
 
-export const Collapsed = styled.div`
+const ONE_NINTH_PERCENT = (1 / 9) * 100
+
+export const StyledCellOverlay = styled.div<StyledOverlayProps>`
+  position: absolute;
+  top: ${({ i }) => (Math.floor(i / 9) / 9) * 100}%;
+  left: ${({ i }) => (Math.floor(i % 9) / 9) * 100}%;
+
+  width: ${ONE_NINTH_PERCENT}%;
+  height: ${ONE_NINTH_PERCENT}%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`
+
+export const Single = styled.div`
   font-size: 2rem;
+  z-index: 100;
 `
 
 export const CenterContainer = styled.div<{ length: number }>`
@@ -72,39 +70,42 @@ export const CenterContainer = styled.div<{ length: number }>`
 
   font-size: ${props =>
     props.length < 8 ? '0.875rem' : props.length < 9 ? '0.75rem' : '0.6875rem'};
+
+  z-index: 100;
 `
 
 export const CornerContainer = styled.div`
   position: absolute;
 
-  padding: 0.125rem;
+  padding: 0.75rem;
 
   width: 100%;
+  height: 100%;
 
   display: grid;
   grid-template-rows: repeat(3, 1fr);
   grid-template-columns: repeat(3, 1fr);
-  grid-gap: 0.25rem;
+  grid-gap: 0.125rem;
   grid-template-areas:
     'a e b'
     'g i h'
     'c f d';
 
-  font-size: 0.875rem;
-  line-height: 1rem;
+  font-size: 0.75rem;
+  line-height: 1;
 `
 
 export const CornerItem = styled.div<{ v: string }>`
   grid-area: ${props => props.v};
+
+  z-index: 100;
 `
 
-export const DebugContainer = styled.pre`
-  position: absolute;
-  color: #7f95a966;
-  font-size: 0.75rem;
-  letter-spacing: 0.5rem;
-  margin-left: 0.5rem;
-  line-height: 1rem;
-`
-
-export default StyledCell
+// export const DebugContainer = styled.pre`
+//   position: absolute;
+//   color: ${props => props.theme.colors.primary.main}80;
+//   font-size: 0.75rem;
+//   letter-spacing: 0.5rem;
+//   margin-left: 0.5rem;
+//   line-height: 1rem;
+// `

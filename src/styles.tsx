@@ -11,8 +11,6 @@ const GlobalStyles = (
         fontSize: '1rem',
         fontWeight: 'normal',
         lineHeight: '1.5',
-        color: '#96c2dd',
-        backgroundColor: '#0D151D',
         WebkitFontSmoothing: 'antialiased',
         MozOsxFontSmoothing: 'grayscale',
       },

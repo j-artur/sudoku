@@ -1,43 +1,22 @@
-import { colFromIndex, indexFromPos, rowFromIndex } from './cell'
-import { Cell, Dir, Mode, Pos, PosString } from './types'
+export type Dir = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT'
 
-export function str(cell: Cell): PosString
-export function str(post: Pos): PosString
-export function str(arg: Cell | Pos): PosString {
-  if ('pos' in arg) return `r${arg.pos.r}c${arg.pos.c}`
-  else return `r${arg.r}c${arg.c}`
-}
+export type Mode = 'DIGIT' | 'CENTER' | 'CORNER'
 
-export const dir = (str: string): Dir | null => {
-  switch (str) {
-    case 'ArrowUp':
-      return 'UP'
-    case 'ArrowDown':
-      return 'DOWN'
-    case 'ArrowLeft':
-      return 'LEFT'
-    case 'ArrowRight':
-      return 'RIGHT'
-    default:
-      return null
-  }
-}
+export type Pos = `r${number}c${number}`
 
-export const mode = (str: string): Mode | null => {
-  switch (str) {
-    case 'z':
-    case 'Z':
-      return 'DIGIT'
-    case 'x':
-    case 'X':
-      return 'CORNER'
-    case 'c':
-    case 'C':
-      return 'CENTER'
-    default:
-      return null
-  }
-}
+export const pos = (i: number): Pos => `r${rowFromIndex(i) + 1}c${colFromIndex(i) + 1}`
+
+export const rowFromIndex = (i: number): number => Math.floor(i / 9)
+export const colFromIndex = (i: number): number => i % 9
+export const boxFromIndex = (i: number): number => Math.floor(i / 27) * 3 + Math.floor((i % 9) / 3)
+
+export const sameRow = (i: number, j: number): boolean => rowFromIndex(i) === rowFromIndex(j)
+export const sameCol = (i: number, j: number): boolean => colFromIndex(i) === colFromIndex(j)
+export const sameBox = (i: number, j: number): boolean => boxFromIndex(i) === boxFromIndex(j)
+
+export const indexFromBox = (b: number, i: number): number =>
+  (3 * Math.floor(b / 3) + Math.floor(i / 3)) * 9 + ((b % 3) * 3 + (i % 3))
+export const ip = (r: number, c: number): number => r * 9 + c
 
 export const move = (i: number, dir: Dir): number => {
   const r = rowFromIndex(i)
@@ -45,15 +24,14 @@ export const move = (i: number, dir: Dir): number => {
 
   switch (dir) {
     case 'UP':
-      return indexFromPos({ r: (r + 8) % 9, c })
+      return ((r + 8) % 9) * 9 + c
     case 'DOWN':
-      return indexFromPos({ r: (r + 10) % 9, c })
+      return ((r + 10) % 9) * 9 + c
     case 'LEFT':
-      return indexFromPos({ r, c: (c + 8) % 9 })
+      return r * 9 + ((c + 8) % 9)
     case 'RIGHT':
-      return indexFromPos({ r, c: (c + 10) % 9 })
+      return r * 9 + ((c + 10) % 9)
   }
 }
 
-export const merge = <T>(...lists: (T | T[])[]): T[] =>
-  [...new Set(lists.flatMap(e => e))].sort()
+export const merge = <T>(...args: (T | T[])[]) => [...new Set<T>(args.flatMap(v => v))].sort()
